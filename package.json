@@ -2,7 +2,7 @@
   "name": "node",
   "version": "1.0.0",
   "description": "Node.js study project",
-  "main": "index-1.js",
+  "main": "index.js",
   "scripts": {
     "start": "nodemon index.js"
   },
