@@ -1,4 +1,4 @@
-const { exec } = require("child_process");
+const {exec} = require("child_process");
 const fs = require("fs");
 
 function showProcess() {
@@ -7,6 +7,8 @@ function showProcess() {
         command = "powershell \"Get-Process | Sort-Object CPU -Descending | Select-Object -Property Name, CPU, WorkingSet -First 1 | ForEach-Object { $_.Name + ' ' + $_.CPU + ' ' + $_.WorkingSet }\"";
     } else if (process.platform === "linux") {
         command = "ps -A -o %cpu,%mem,comm | sort -nr | head -n 1";
+    } else if (process.platform === "darwin") {
+        command = 'ps -A -o %cpu,%mem,comm -r';
     } else {
         console.log("The current OS is not supported");
         return;
