@@ -22,14 +22,14 @@ describe('helpers', () => {
         })
 
         it('throws error if year is not current', () => {
-            const nextYear = 2025;
+            const nextYear = 2026;
             const validateWrapper = () => validateInput({year: nextYear, country: SUPPORTED_COUNTRIES[0]})
 
             expect(validateWrapper).toThrow(new Error(`Year provided not the current, received: ${nextYear}`))
         })
 
         it('throws error if country is not supported ', () => {
-            const notSupportedCountryCode = 'US';
+            const notSupportedCountryCode = 'CN';
             const validateWrapper = () => validateInput({year: 2023, country: notSupportedCountryCode})
 
             expect(validateWrapper).toThrow(new Error(`Country provided is not supported, received: ${notSupportedCountryCode}`))

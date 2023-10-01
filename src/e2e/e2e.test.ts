@@ -33,7 +33,7 @@ describe('LongWeekend', () => {
         const {
             status,
             body
-        }: ApiResponse<LongWeekend[]> = await request(PUBLIC_HOLIDAYS_API_URL).get('/LongWeekend/2023/UA');
+        }: ApiResponse<LongWeekend[]> = await request(PUBLIC_HOLIDAYS_API_URL).get('/LongWeekend/2023/US');
 
         expect(status).toEqual(200);
 
@@ -65,7 +65,7 @@ describe('County', () => {
         const {
             status,
             body
-        }: ApiResponse<CountryInfo> = await request(PUBLIC_HOLIDAYS_API_URL).get('/CountryInfo/UA');
+        }: ApiResponse<CountryInfo> = await request(PUBLIC_HOLIDAYS_API_URL).get('/CountryInfo/US');
 
         expect(status).toEqual(200);
 

@@ -6,7 +6,6 @@ import {PublicHolidayShort} from "../../types";
 export const checkIfShorterHoliday = <T extends PublicHolidayShort>(holiday: T): boolean => {
     const fields = ['name', 'localName', 'date'].sort();
     const shortPublicHolidayFields = Object.keys(holiday).sort();
-    //simple workaround to compare two arrays
     return JSON.stringify(fields) === JSON.stringify(shortPublicHolidayFields);
 }
 const currentYear = new Date().getFullYear();
@@ -14,7 +13,7 @@ const currentYear = new Date().getFullYear();
 describe('public-holidays.service.integration', () => {
     describe('getListOfPublicHolidays integration', () => {
         it('should throw unsupported country error if country is not in SUPPORTED_COUNTRIES', async () => {
-            const unsupportedCountry = 'US'
+            const unsupportedCountry = 'CN'
             await expect(getListOfPublicHolidays(currentYear, unsupportedCountry)).rejects.toThrow(new Error(`Country provided is not supported, received: ${unsupportedCountry}`))
         });
 

@@ -11,7 +11,7 @@ describe('public-holidays.service', () => {
         jest.clearAllMocks();
     })
     describe('getListOfPublicHolidays', () => {
-        const invalidCountry = 'US';
+        const invalidCountry = 'CN';
         const validYear = new Date().getFullYear();
         const invalidYear = validYear - 1;
 
@@ -44,7 +44,6 @@ describe('public-holidays.service', () => {
             axiosGetSpy.mockImplementation(() => Promise.resolve({data: PublicHolidaysListMock}));
 
             const [_, countryCode] = SUPPORTED_COUNTRIES;
-            // just to check it works with other indexes
             await getListOfPublicHolidays(validYear, countryCode);
 
             expect(axiosGetSpy).toHaveBeenCalledWith(`${PUBLIC_HOLIDAYS_API_URL}/PublicHolidays/${validYear}/${countryCode}`)
@@ -100,7 +99,7 @@ describe('public-holidays.service', () => {
         });
 
         it('should return empty array on error', async () => {
-            axiosGetSpy.mockImplementation(() => Promise.reject(new Error('Ooops... something went wrong')));
+            axiosGetSpy.mockImplementation(() => Promise.reject(new Error('Something went wrong')));
 
             const shortPublicHolidays = await getNextPublicHolidays(SUPPORTED_COUNTRIES[0]);
 
