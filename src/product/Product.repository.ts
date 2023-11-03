@@ -1,49 +1,28 @@
-import {IProductSchema, ProductModel} from "./Product.model";
-import {IExtendedProduct, IProduct} from "./types";
+import {IExtendedProduct} from "./types";
+import {pool} from "../db/RDB-connections";
+import {SELECT_PRODUCT_BY_CODE_QUERY, SELECT_PRODUCTS} from "../queries/products";
 
-export const makeProductDTO = ({title, description, price, _id}: IProductSchema): IExtendedProduct => ({
+export const makeProductDTO = ({title, description, price, code}: IExtendedProduct): IExtendedProduct => ({
     title,
     description,
     price,
-    id: _id
+    code
 })
-export const createProduct = async (product: IProduct) => {
-    try {
-        const newProduct = new ProductModel(product);
 
-        return makeProductDTO(await newProduct.save());
-    } catch (err) {
-        console.error(err);
-        throw new Error(`Error saving product:}`)
-    }
-}
-
-export const updateProduct = async (id: string, product: IProduct) => {
+export const getProductById = async (code: string): Promise<IExtendedProduct | null> => {
     try {
-        const newProduct = await ProductModel.findByIdAndUpdate(id, product, {new: true})
-        if (newProduct) {
-            return makeProductDTO(newProduct)
-        }
-        return null;
-    } catch (err) {
-        console.error(err);
-        throw new Error(`cannot update product with id:${id}`)
-    }
-}
-
-export const getProductById = async (id: string): Promise<IExtendedProduct | null> => {
-    try {
-        const product = await ProductModel.findById(id);
-        return product ? makeProductDTO(product) : null;
+        const {rows} = await pool.query(SELECT_PRODUCT_BY_CODE_QUERY, [code]);
+        return rows.length ? makeProductDTO(rows[0]) : null;
     } catch (err) {
         console.error(err)
-        throw new Error(`cannot find product with id:${id}`)
+        throw new Error(`cannot find product with id:${code}`)
     }
 }
 
 export const getAllProducts = async (): Promise<IExtendedProduct[]> => {
     try {
-        const products = await ProductModel.find();
+        const {rows: products} = await pool.query(SELECT_PRODUCTS)
+        console.log(products)
         return products.map(makeProductDTO)
     } catch (err) {
         console.error(err)

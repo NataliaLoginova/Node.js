@@ -1,7 +1,6 @@
 import express, {NextFunction, Request, Response} from "express";
-import {getProducts, getProduct, updateExistingProduct, createNewProduct} from "./Product.service";
-import {IExtendedProduct, IProduct} from "./types";
-import {validateProductCreation} from "../middlewares/validators/productCreationValidator";
+import {getProducts, getProduct} from "./Product.service";
+import {IExtendedProduct} from "./types";
 import {HttpStatusCode} from "../constants";
 
 export const productController = express.Router();
@@ -15,35 +14,6 @@ productController.get('/products', async (req: Request, res: IProductResponse<IE
         next(err)
     }
 })
-
-productController.post('/products', validateProductCreation, async (req: Request<any, any, IProduct>, res: IProductResponse<IExtendedProduct>, next: NextFunction) => {
-    try {
-        const {body} = req;
-        const product = await createNewProduct(body);
-        if (product){
-            res.status(HttpStatusCode.OK).json(product);
-        } else{
-            res.status(HttpStatusCode.BAD_REQUEST).send({error: 'cannot create product'})
-        }
-    } catch (err){
-        next(err)
-    }
-});
-
-productController.put('/products/:productId', validateProductCreation, async (req: Request<{ productId: string }, IProduct>, res: IProductResponse<IExtendedProduct>, next: NextFunction) => {
-    const { body,  params: { productId } } = req;
-    try {
-        const product = await updateExistingProduct(productId, body);
-        if (product) {
-            res.status(HttpStatusCode.CREATED).send(product);
-        } else {
-            res.status(HttpStatusCode.BAD_REQUEST).send({error: 'cannot update product'})
-        }
-    } catch (err) {
-        next(err);
-    }
-});
-
 
 productController.get('/products/:productId', async (req: Request<{ productId: string }>, res: IProductResponse<IExtendedProduct>, next: NextFunction) => {
     const {params: {productId}} = req;
