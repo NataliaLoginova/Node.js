@@ -1,11 +1,13 @@
-import express, {NextFunction, Request, Response} from "express";
+import express, {NextFunction, Response} from "express";
 import {deleteProfileCart, handleGetCartInfo, updateProfileCart} from "./Cart.service";
 import {ICart} from "./Cart.model";
-import {ICheckout} from "../order/types";
 import {validateUpdateCartStructure} from "../middlewares/validators/updateCartValidator";
 import {makeOrder} from "../order/Order.service";
 import {IOrder} from "../order/Order.model";
 import {HttpStatusCode} from "../constants";
+import {Roles} from "../role/Role.model";
+import {CustomRequest} from "../middlewares/authentification";
+
 
 export const cartController = express.Router();
 
@@ -28,20 +30,19 @@ interface IOrderResponse<T> extends IShortResponse {
 }
 
 
-cartController.get('/cart', async (req: Request, res: Response<ICartResponse<ICart>>, next: NextFunction) => {
-    const authorizationHeader = (req.headers['x-user-id'] || '') as string;
+cartController.get('/cart', async (req: CustomRequest, res: Response<ICartResponse<ICart>>, next: NextFunction) => {
+    const {user} = req;
     try {
-        const {total, cart} = await handleGetCartInfo(authorizationHeader);
+        const {total, cart} = await handleGetCartInfo(user?.id!);
         res.json({statusCode: HttpStatusCode.OK, message: 'cart retrieved', data: {total, cart}});
     } catch (err) {
         next(err);
     }
 })
-cartController.post('/cart/checkout', async (req: Request<any, any, ICheckout>, res: Response<IOrderResponse<IOrder> | IShortResponse>, next: NextFunction) => {
-    const {body} = req;
-    const authorizationHeader = req.headers['x-user-id'] as string;
+cartController.post('/cart/checkout', async (req: CustomRequest, res: Response<IOrderResponse<IOrder> | IShortResponse>, next: NextFunction) => {
+    const {body, user} = req;
     try {
-        const order = await makeOrder(body, authorizationHeader);
+        const order = await makeOrder(body, user?.id!);
         if (order) {
             res.json({statusCode: HttpStatusCode.CREATED, message: 'cart retrieved', data: {order}})
         } else {
@@ -52,11 +53,10 @@ cartController.post('/cart/checkout', async (req: Request<any, any, ICheckout>, 
     }
 })
 
-cartController.put('/cart', validateUpdateCartStructure, async (req: Request<any, any, ICart>, res: Response<ICartResponse<ICart> | IShortResponse>, next: NextFunction) => {
-    const {body} = req;
-    const authorizationHeader = req.headers['x-user-id'] as string;
+cartController.put('/cart', validateUpdateCartStructure, async (req: CustomRequest, res: Response<ICartResponse<ICart> | IShortResponse>, next: NextFunction) => {
+    const {body, user} = req;
     try {
-        const updatedData = await updateProfileCart(body, authorizationHeader);
+        const updatedData = await updateProfileCart(body, user?.id!);
         if (updatedData) {
             res.send({statusCode: HttpStatusCode.OK, message: 'cart data', data: {...updatedData}});
         } else {
@@ -67,15 +67,18 @@ cartController.put('/cart', validateUpdateCartStructure, async (req: Request<any
     }
 })
 
-cartController.delete('/cart', async (req: Request, res: Response<IShortResponse>, next: NextFunction) => {
+cartController.delete('/cart', async (req: CustomRequest, res: Response<IShortResponse>, next: NextFunction) => {
     try {
-        const authorizationHeader = req.headers['x-user-id'] as string;
-        const isDeleted = await deleteProfileCart(authorizationHeader);
-        if (isDeleted) {
-            res.send({statusCode: HttpStatusCode.OK, message: 'the cart has been deleted'});
-        } else {
-            res.send({statusCode: HttpStatusCode.NOT_FOUND, message: 'cart is not found'});
+        const {role, id} = req.user!
+        if (role === Roles.ADMIN){
+            const isDeleted = await deleteProfileCart(id!);
+            if (isDeleted) {
+                res.send({statusCode: HttpStatusCode.OK, message: 'the cart has been deleted'});
+            } else {
+                res.send({statusCode: HttpStatusCode.NOT_FOUND, message: 'cart is not found'});
+            }
         }
+        res.send({statusCode: HttpStatusCode.FORBIDDEN, message: 'action forbidden'});
     } catch (err) {
         next(err)
     }

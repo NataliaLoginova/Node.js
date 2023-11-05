@@ -1,7 +1,9 @@
+import {Roles} from "../role/Role.model";
+
 export interface IUser {
     email: string,
     password: string,
-    role: string,
+    role: Roles,
 }
 
 export type IUserDTO = Omit<IUser, 'password'> & Pick<IExtendedUser, 'id'>
