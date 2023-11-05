@@ -8,5 +8,10 @@
     "title": "Pen",
     "description": "Cute pen",
     "price": 20
+  },
+  {
+    "title": "Magazine",
+    "description": "Cute magazine",
+    "price": 50
   }
 ]

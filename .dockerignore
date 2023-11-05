@@ -1,0 +1,16 @@
+node_modules
+
+npm-debug.log
+
+.dockerignore
+.docker
+Dockerfile*
+
+.git
+.gitignore
+
+.idea
+
+*.log
+*.gz
+*.zip
