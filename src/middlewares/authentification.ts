@@ -18,7 +18,7 @@ export const authMiddleware = (req: CustomRequest, res: Response, next: NextFunc
         if (!accessToken){
             return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'Unauthorized' });
         }
-        const {JWT_ACCESS_SECRET} = config().parsed! || process.env;
+        const {JWT_ACCESS_SECRET} = config().parsed!;
         const userData = validateToken(accessToken, JWT_ACCESS_SECRET) as IUserDTO;
 
         if (!userData){

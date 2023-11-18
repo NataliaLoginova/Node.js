@@ -6,7 +6,7 @@ import {TokenModel} from "./Token.model";
 import {makeUserDTO} from "../user/User.repository";
 import {UserModel} from "../user/User.model";
 
-const {JWT_ACCESS_SECRET, JWT_REFRESH_SECRET} = config().parsed! || process.env;
+const {JWT_ACCESS_SECRET, JWT_REFRESH_SECRET} = config().parsed!;
 export const generateTokens = (payload: IUserDTO): IToken => {
     const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET, {expiresIn: '2h'})
     const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {expiresIn: '30d'});

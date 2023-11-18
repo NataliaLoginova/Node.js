@@ -11,7 +11,7 @@ interface IRole {
 
 export type IRoleSchema = IRole & Document;
 
-export const userSchema = new Schema<IRole>({
+export const userSchema = new Schema<IRoleSchema>({
     role: {type: String, unique: true, default: Roles.USER},
 });
 
